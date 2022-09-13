@@ -1,52 +1,16 @@
 const express = require("express");
 const app = express();
 
-const stripe  = require("stripe")("##Key##");
-
 const cors =  require("cors");
 app.use(cors());
 
-const bodyparser = require('body-parser');
-app.use(bodyparser.urlencoded({extended:false}));
-app.use(bodyparser.json());
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.json());
 
-app.post('/checkout', async(req,res) => {
-    console.log("req.body------>",res.body);
-    try {
-        console.log(req.body);
-        token = req.body.token
-      const customer = stripe.customers
-        .create({
-          email: "kp1997@gmail.com",
-          source: token.id
-        })
-        .then((customer) => {
-          console.log(customer);
-          return stripe.charges.create({
-            amount: 1000,
-            description: "Test Purchase using express and Node",
-            currency: "USD",
-            customer: customer.id,
-          });
-        })
-        .then((charge) => {
-          console.log(charge);
-            res.json({
-              data:"success"
-          })
-        })
-        .catch((err) => {
-            res.json({
-              data: "failure",
-            });
-        });
-      return true;
-    } catch (error) {
-      return false;
-    }
-})
+const api = require('./src/routes/api');
+app.use('/api', api);
 
-
-app.listen(4000, () => {
-    console.log("App is listening on port 4000");
+app.listen(4001, () => {
+    console.log("App listening in port 4001");
 })
